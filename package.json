@@ -1,0 +1,18 @@
+{
+  "name": "essensplan-aufstellen",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stefan Hoffmann",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "^3.3.6",
+    "bootstrap-select": "^1.10.0",
+    "ejs": "^2.4.2",
+    "express": "^4.14.0",
+    "jquery": "^2.0.0"
+  }
+}

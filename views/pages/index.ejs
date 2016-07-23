@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../partials/head %>
+</head>
+<body class="container">
+
+    <header>
+        <% //include ../partials/header %>
+    </header>
+
+    <main>
+        <div class="row">
+            <div class="col-sm-12">
+                <h2>Essenplan nächste Woche</h2>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-9">
+                <table class="table table-condensed table-striped">
+                    <tr>
+                        <th>Tag</th><th>Frühstück</th><th>Mittag</th><th>Abendbrot</th>
+                    </tr>
+
+                    <% tag="Samstag"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Sonntag"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Montag"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Dienstag"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Mittwoch"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Donnerstag"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Freitag"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    <% tag="Reserve"; %>
+                    <% include ../partials/tagesessenauswahl %>
+
+                    </table>
+                </table>
+            </div>
+            <div class="col-sm-3 text-right help-block">
+                <h3>Zusammenfassung</h3>
+                <ul id="zusammenfassung">
+                </ul>
+                <br/>
+                <h3>In Zutaten aufgesplittet</h3>
+                <ul id="zutaten">
+                </ul>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-12">
+                <h3>Mögliche Lieferanten</h3>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-6">
+                <h4>REWE</h4>
+                <div id="rewe">
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <h4>Optimalpreis bei vollem Verbrauch aller Zutaten</h4>
+                <div id="optimalpreis">
+                    
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <% include ../partials/footer %>
+    </footer>
+    
+    <% include ../partials/script-include %>
+</body>
+</html>
