@@ -2,7 +2,7 @@
 // load the things we need
 var express = require('express');
 var app = express();
-var rezepte = require("../gemeinsame-dateien/rezepte");
+var rezepte = require("einkauf-lib/rezepte");
 
 // set the view engine to ejs
 app.set('view engine', 'ejs');

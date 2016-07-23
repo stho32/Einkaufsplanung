@@ -1,122 +1,4 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-/**
- * 
- * Der Einstiegspunkt für die Anwendung :)
- * 
- */
-
-var rezepte = require("../../../gemeinsame-dateien/rezepte.js");
-var Einkaufsliste = require("../../../gemeinsame-dateien/einkaufsliste.js");
-var Rewe = require("../../../gemeinsame-dateien/lieferanten/rewe");
-
-var toCountByItem = require("./tools.js").toCountByItem;
-
-
-/* Abstraktion der UI als Datenschicht */
-var uiData = (function() {
-    "use strict";
-
-    var publicApi;
-
-    function Essensauswahlen() {
-        var ergebnis = [];
-        
-        $("select.essensauswahl").each(
-            function(index, value) {
-                ergebnis.push($(value).val());
-            }
-        );
-
-        return ergebnis;
-    }
-
-    publicApi = {
-        Essensauswahlen : Essensauswahlen
-    };
-
-    return publicApi;
-})();
-
-/* BL */
-var client = (function () {
-    "use strict";
-
-    var publicApi;
-
-    /**
-     * Wir tragen die Einzelauswahlen zusammen und stellen daraus 
-     * eine schöne Liste auf mit Anzahl und Gericht, die wir 
-     * dann weiterverarbeiten können.
-     */
-    function ZusammenfassungErstellen() {
-        var eintraege = uiData.Essensauswahlen();
-        var ausgezaehlt = toCountByItem(eintraege);
-        
-        var ausgabe = ""; 
-        var keys = Object.keys(ausgezaehlt);
-        var einkaufsliste = new Einkaufsliste();
-
-        for ( var i = 0; i < keys.length; i++ ) {
-            var rezept = rezepte.Rezept(keys[i]);
-            if (rezept !== undefined) {
-                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + rezept.name + "</li>";
-                for ( var j = 0; j < ausgezaehlt[keys[i]]; j++ ) {
-                    einkaufsliste.FuegeRezeptHinzu(keys[i], rezepte.Rezepte);
-                }
-            }
-            else
-            {
-                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + keys[i] + "</li>";
-            }
-        }
-
-        $("#zusammenfassung").html(ausgabe); 
-        $("#zutaten").html(einkaufsliste.AlsHtmlLi());       
-        var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
-        $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
-        $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
-    }
-
-    function Init() {
-        /* Wenn eine Auswahl geändert wird, dann wollen wir gerne davon wissen */
-        $("select.essensauswahl").on("change", ZusammenfassungErstellen );
-
-        ZusammenfassungErstellen();
-    }
-
-    publicApi = {
-        init : Init
-    };
-
-    return publicApi; 
-})();
-
-
-
-$(document).ready(function() {
-    client.init();
-});
-},{"../../../gemeinsame-dateien/einkaufsliste.js":3,"../../../gemeinsame-dateien/lieferanten/rewe":4,"../../../gemeinsame-dateien/rezepte.js":5,"./tools.js":2}],2:[function(require,module,exports){
-function toCountByItem(items)
-{
-    var ergebnis = {};
-
-    for ( var i = 0; i < items.length; i++ ) {
-        if ( ergebnis[items[i]] === undefined ) {
-            ergebnis[items[i]] = 1;
-        }
-        else {
-            ergebnis[items[i]] += 1;
-        }
-    }
-
-    return ergebnis;
-}
-
-module.exports = {
-    toCountByItem : toCountByItem
-};
-},{}],3:[function(require,module,exports){
 
 var Einkaufsliste = function() {
     "use strict";
@@ -318,7 +200,7 @@ var Einkaufsliste = function() {
 };
 
 module.exports = Einkaufsliste;
-},{}],4:[function(require,module,exports){
+},{}],2:[function(require,module,exports){
 /**
  * 
  * Einkauf über REWE
@@ -521,7 +403,7 @@ var Umrechnungen = [
 ]
 
 module.exports.Umrechnungen = Umrechnungen;
-},{}],5:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 /**
  * 
  * Diese Datei beinhaltet die Rezepte, die die Anwendung kennt. 
@@ -667,4 +549,122 @@ publicApi = {
 module.exports = publicApi;
 
 
-},{}]},{},[1]);
+},{}],4:[function(require,module,exports){
+/**
+ * 
+ * Der Einstiegspunkt für die Anwendung :)
+ * 
+ */
+
+var rezepte = require("../../node_modules/einkauf-lib/rezepte.js");
+var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
+var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
+
+var toCountByItem = require("./tools.js").toCountByItem;
+
+
+/* Abstraktion der UI als Datenschicht */
+var uiData = (function() {
+    "use strict";
+
+    var publicApi;
+
+    function Essensauswahlen() {
+        var ergebnis = [];
+        
+        $("select.essensauswahl").each(
+            function(index, value) {
+                ergebnis.push($(value).val());
+            }
+        );
+
+        return ergebnis;
+    }
+
+    publicApi = {
+        Essensauswahlen : Essensauswahlen
+    };
+
+    return publicApi;
+})();
+
+/* BL */
+var client = (function () {
+    "use strict";
+
+    var publicApi;
+
+    /**
+     * Wir tragen die Einzelauswahlen zusammen und stellen daraus 
+     * eine schöne Liste auf mit Anzahl und Gericht, die wir 
+     * dann weiterverarbeiten können.
+     */
+    function ZusammenfassungErstellen() {
+        var eintraege = uiData.Essensauswahlen();
+        var ausgezaehlt = toCountByItem(eintraege);
+        
+        var ausgabe = ""; 
+        var keys = Object.keys(ausgezaehlt);
+        var einkaufsliste = new Einkaufsliste();
+
+        for ( var i = 0; i < keys.length; i++ ) {
+            var rezept = rezepte.Rezept(keys[i]);
+            if (rezept !== undefined) {
+                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + rezept.name + "</li>";
+                for ( var j = 0; j < ausgezaehlt[keys[i]]; j++ ) {
+                    einkaufsliste.FuegeRezeptHinzu(keys[i], rezepte.Rezepte);
+                }
+            }
+            else
+            {
+                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + keys[i] + "</li>";
+            }
+        }
+
+        $("#zusammenfassung").html(ausgabe); 
+        $("#zutaten").html(einkaufsliste.AlsHtmlLi());       
+        var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
+        $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
+        $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
+    }
+
+    function Init() {
+        /* Wenn eine Auswahl geändert wird, dann wollen wir gerne davon wissen */
+        $("select.essensauswahl").on("change", ZusammenfassungErstellen );
+
+        ZusammenfassungErstellen();
+    }
+
+    publicApi = {
+        init : Init
+    };
+
+    return publicApi; 
+})();
+
+
+
+$(document).ready(function() {
+    client.init();
+});
+},{"../../node_modules/einkauf-lib/einkaufsliste.js":1,"../../node_modules/einkauf-lib/lieferanten/rewe":2,"../../node_modules/einkauf-lib/rezepte.js":3,"./tools.js":5}],5:[function(require,module,exports){
+function toCountByItem(items)
+{
+    var ergebnis = {};
+
+    for ( var i = 0; i < items.length; i++ ) {
+        if ( ergebnis[items[i]] === undefined ) {
+            ergebnis[items[i]] = 1;
+        }
+        else {
+            ergebnis[items[i]] += 1;
+        }
+    }
+
+    return ergebnis;
+}
+
+module.exports = {
+    toCountByItem : toCountByItem
+};
+},{}]},{},[4]);

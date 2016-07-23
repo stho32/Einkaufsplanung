@@ -11,6 +11,7 @@
   "dependencies": {
     "bootstrap": "^3.3.6",
     "bootstrap-select": "^1.10.0",
+    "einkauf-lib": "git+https://StHoffmann@bitbucket.org/StHoffmann/einkauf-lib.git",
     "ejs": "^2.4.2",
     "express": "^4.14.0",
     "jquery": "^2.0.0"

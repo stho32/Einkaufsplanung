@@ -4,9 +4,9 @@
  * 
  */
 
-var rezepte = require("../../../gemeinsame-dateien/rezepte.js");
-var Einkaufsliste = require("../../../gemeinsame-dateien/einkaufsliste.js");
-var Rewe = require("../../../gemeinsame-dateien/lieferanten/rewe");
+var rezepte = require("../../node_modules/einkauf-lib/rezepte.js");
+var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
+var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
 
 var toCountByItem = require("./tools.js").toCountByItem;
 
