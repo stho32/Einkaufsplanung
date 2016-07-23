@@ -14,6 +14,7 @@
     "einkauf-lib": "git+https://StHoffmann@bitbucket.org/StHoffmann/einkauf-lib.git",
     "ejs": "^2.4.2",
     "express": "^4.14.0",
+    "fs": "0.0.2",
     "jquery": "^2.0.0"
   }
 }
