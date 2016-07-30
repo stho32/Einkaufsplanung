@@ -14,6 +14,7 @@
  * dass die Eingabe des Benutzers verloren geht.
  * 
  */
+var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
 
 
 var Inventur = function inventur(selektor) {
@@ -21,15 +22,56 @@ var Inventur = function inventur(selektor) {
 
     var publicApi;
 
+    function AktualisiereRestmenge(eventTarget) {
+        var wert = $(eventTarget).val();
+        var i = $(eventTarget).data("position");
+
+        if ( !isNaN(wert) ) {
+            $(eventTarget).removeClass("has-error");
+            wert = parseFloat(wert);
+            publicApi.Daten[i].lagerbestand = wert;
+            var restbedarf = (publicApi.Daten[i].anzahl - publicApi.Daten[i].lagerbestand).toFixed(2);
+            $(selektor).find("#restbedarf-" + i).html(restbedarf);
+
+            if (publicApi.Aenderungscallback !== undefined)
+            {
+                publicApi.Aenderungscallback();
+            }
+        }
+        else
+        {
+            $(eventTarget).addClass("has-error");
+            $(selektor).find("#restbedarf-" + i).html("Zahl wird benötigt");
+        }
+    }
+
     function AktualisiereAnzeige() {
+        $(selektor).off("change");
+
         $(selektor).html(AlsHtml());
+
+        $(selektor).on("change", "input", function(event) {
+            AktualisiereRestmenge(event.target);
+        });
     }
 
     function AktualisiereDaten(neueDaten) {
-        publicApi.Daten = neueDaten;
-        AktualisiereAnzeige();
-    }
+        publicApi.Daten = JSON.parse(JSON.stringify(neueDaten));
 
+        for ( var i = 0; i < publicApi.Daten.length; i++ ) {
+            if ( publicApi.Daten[i].lagerbestand === undefined ) {
+                publicApi.Daten[i].lagerbestand = 0;
+            }
+        }
+
+        AktualisiereAnzeige();
+
+        if (publicApi.Aenderungscallback !== undefined)
+        {
+            publicApi.Aenderungscallback();
+        }
+    }
+        
     /* Zweck einer Lagerbedarfstabelle ist die Auflistung der Inhalte mit der 
        Möglichkeit einen vorhandenen Lagerbestand anzugeben.
        Die Mengendifferenz kann dann wiederum weiterverarbeitet werden, so dass
@@ -43,17 +85,32 @@ var Inventur = function inventur(selektor) {
         ergebnis += "<tr><th style=\"text-align:right\">Anzahl nötig</th><th>Einheit</th><th>Artikel</th><th>Lagerbestand</th><th>Restbedarf</th></tr>";
 
         var anzahl = publicApi.Daten.length;
-        var summe = 0;
 
         for (var i = 0; i < anzahl; i++) {
 
-            ergebnis += "<tr><td style=\"text-align:right\">" + publicApi.Daten[i].anzahl.toFixed(2) +  
-                        "</td><td>" + publicApi.Daten[i].einheit + "</td><td>" + publicApi.Daten[i].artikel + 
-                        "</td>" + 
-                        "<td><input type=\"text\" class=\"form-control\" id=\"lagerbestand-" + i + "\"></input></td>" + 
-                        "<td id=\"restbedarf-" + i + "\" data-anzahl=\"\" data-artikel=\"\" data-einheit=\"\"></td>" + 
+            var bedarf          = publicApi.Daten[i].anzahl.toFixed(2);
+            var lagerbestand    = publicApi.Daten[i].lagerbestand.toFixed(2);
+            var restbedarf      = (parseFloat(bedarf) - parseFloat(lagerbestand)).toFixed(2);
+            var einheit         = publicApi.Daten[i].einheit;
+            var artikel         = publicApi.Daten[i].artikel;
+
+            var template = 
+                        "<tr>" + 
+                            "<td style=\"text-align:right\">$bedarf$</td>" + 
+                            "<td>$einheit$</td>" + 
+                            "<td>$artikel$</td>" + 
+                            "<td><input type=\"text\" class=\"form-control\" data-position=\"$i$\" value=\"0\"></input></td>" + 
+                            "<td style=\"text-align:right\" id=\"restbedarf-$i$\">$restbedarf$</td>" + 
                         "</tr>";
-                        
+
+            template = template.replace(/\$bedarf\$/g, bedarf);
+            template = template.replace(/\$lagerbestand\$/g, lagerbestand);
+            template = template.replace(/\$restbedarf\$/g, restbedarf);
+            template = template.replace(/\$einheit\$/g, einheit);
+            template = template.replace(/\$artikel\$/g, artikel);
+            template = template.replace(/\$i\$/g, i);
+
+            ergebnis += template;
         }        
 
         ergebnis += "</table>";
@@ -61,16 +118,35 @@ var Inventur = function inventur(selektor) {
         return ergebnis;
     }
 
-    /* Ruft die durch die Inventur ggf. manuell modifizierte 
-       Ergebnisliste ab.
-    */
+    /* Ruft die durch die Inventur ggf. manuell modifizierte Ergebnisliste ab. */
     function ErgebnisEinkaufsliste() {
-        
+        var einkaufsliste = new Einkaufsliste();
+
+        for ( var i = 0; i < publicApi.Daten.length; i++ ) {
+            var restbedarf = Math.round((publicApi.Daten[i].anzahl - publicApi.Daten[i].lagerbestand)*100)/100;
+            
+            if ( restbedarf > 0 ) {
+                einkaufsliste.FuegeZutatHinzu({
+                    artikel : publicApi.Daten[i].artikel,
+                    einheit : publicApi.Daten[i].einheit,
+                    anzahl  : restbedarf
+                });
+            }
+        }
+
+        return einkaufsliste;
     }
 
     publicApi = {
         AktualisiereDaten : AktualisiereDaten,
         AlsHtml : AlsHtml,
-        ErgebnisEinkaufsliste : ErgebnisEinkaufsliste
+        ErgebnisEinkaufsliste : ErgebnisEinkaufsliste,
+        Aenderungscallback : undefined
     };
+
+    return publicApi;
+}
+
+module.exports = {
+    Inventur : Inventur
 }

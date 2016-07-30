@@ -7,7 +7,7 @@
 var rezepte = require("../../node_modules/einkauf-lib/rezepte.js");
 var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
 var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
-
+var Inventur = require("./inventur.js").Inventur;
 var toCountByItem = require("./tools.js").toCountByItem;
 
 
@@ -43,6 +43,19 @@ var client = (function () {
     var publicApi;
 
     /**
+     * Wenn das Inventurcontrol eine Aktualisierung meldet, dann aktualisieren wir
+     * die Anzeige.
+     * */
+    function AktualisiereErgebnis() {
+        var einkaufsliste = publicApi.Inventur.ErgebnisEinkaufsliste();
+        console.log(einkaufsliste);
+        /* ... und ab hier müsste jetzt das Inventurergebnis weiterverwendet werden. */
+        var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
+        $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
+        $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
+    }
+
+    /**
      * Wir tragen die Einzelauswahlen zusammen und stellen daraus 
      * eine schöne Liste auf mit Anzahl und Gericht, die wir 
      * dann weiterverarbeiten können.
@@ -70,16 +83,18 @@ var client = (function () {
         }
 
         $("#zusammenfassung").html(ausgabe); 
-        $("#zutaten").html(einkaufsliste.AlsLagerbedarfstabelle());       
-        var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
-        $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
-        $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
+
+        /* Wir informieren das Inventur-Control, dass es sich ggf. anpassen muss. */
+        publicApi.Inventur.AktualisiereDaten(einkaufsliste.Daten);
+
+
     }
 
     function Init() {
         /* Wenn eine Auswahl geändert wird, dann wollen wir gerne davon wissen */
         $("select.essensauswahl").on("change", ZusammenfassungErstellen );
-
+        publicApi.Inventur = Inventur("#zutaten");
+        publicApi.Inventur.Aenderungscallback = AktualisiereErgebnis;
         ZusammenfassungErstellen();
     }
 
