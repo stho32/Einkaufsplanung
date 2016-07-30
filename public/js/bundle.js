@@ -622,7 +622,7 @@ var client = (function () {
         }
 
         $("#zusammenfassung").html(ausgabe); 
-        $("#zutaten").html(einkaufsliste.AlsHtmlLi());       
+        $("#zutaten").html(einkaufsliste.AlsLagerbedarfstabelle());       
         var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
         $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
         $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
