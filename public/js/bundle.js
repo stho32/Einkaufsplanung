@@ -459,10 +459,11 @@ var Rezepte =
             name: "Pfannkuchen",
             zutaten:
             [
-                { anzahl: 200, einheit: "g", artikel: "Mehl" },
-                { anzahl: 5, einheit: "Stück", artikel: "Eier" },
-                { anzahl: 400, einheit: "ml", artikel: "Milch" },   
-                { anzahl: 25, einheit: "g", artikel: "Zucker" },                             
+                { anzahl: 120, einheit: "g", artikel: "Mehl" },
+                { anzahl: 3, einheit: "Stück", artikel: "Eier" },
+                { anzahl: 240, einheit: "ml", artikel: "Milch" },   
+                { anzahl: 15, einheit: "g", artikel: "Zucker" },  
+                { anzahl: 0.5, einheit: "Glass", artikel: "Apfelmus" }                           
             ]
         },
         {
@@ -470,12 +471,12 @@ var Rezepte =
             name: "Wurstkartoffeln",
             zutaten:
             [
-                { anzahl: 500, einheit: "g", artikel: "Kartoffeln" },
-                { anzahl: 5, einheit: "Stück", artikel: "Würstchen" },
-                { anzahl: 1, einheit: "Stück", artikel: "Zwiebel" },   
-                { anzahl: 1, einheit: "Stück", artikel: "Knoblauchzehe" },    
-                { anzahl: 1, einheit: "tl", artikel: "Paprikapulver"},
-                { anzahl: 1, einheit: "tl", artikel: "Majoran"}
+                { anzahl: 500 / 2, einheit: "g", artikel: "Kartoffeln" },
+                { anzahl: 5 / 2, einheit: "Stück", artikel: "Würstchen" },
+                { anzahl: 1 / 2, einheit: "Stück", artikel: "Zwiebel" },   
+                { anzahl: 1 / 2, einheit: "Stück", artikel: "Knoblauchzehe" },    
+                { anzahl: 1 / 2, einheit: "tl", artikel: "Paprikapulver"},
+                { anzahl: 1 / 2, einheit: "tl", artikel: "Majoran"}
             ]
         },
         {
@@ -556,7 +557,7 @@ module.exports = publicApi;
  * 
  */
 
-var rezepte = require("../../node_modules/einkauf-lib/rezepte.js");
+var rezepte = require("../../node_modules/stefans-rezepte/rezepte.js");
 var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
 var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
 var Inventur = require("./inventur.js").Inventur;
@@ -662,7 +663,7 @@ var client = (function () {
 $(document).ready(function() {
     client.init();
 });
-},{"../../node_modules/einkauf-lib/einkaufsliste.js":1,"../../node_modules/einkauf-lib/lieferanten/rewe":2,"../../node_modules/einkauf-lib/rezepte.js":3,"./inventur.js":5,"./tools.js":6}],5:[function(require,module,exports){
+},{"../../node_modules/einkauf-lib/einkaufsliste.js":1,"../../node_modules/einkauf-lib/lieferanten/rewe":2,"../../node_modules/stefans-rezepte/rezepte.js":3,"./inventur.js":5,"./tools.js":6}],5:[function(require,module,exports){
 /**
  * 
  * Eine Inventur nimmt eine Einkaufsliste entgegen und zeigt

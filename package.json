@@ -12,6 +12,7 @@
     "bootstrap": "^3.3.6",
     "bootstrap-select": "^1.10.0",
     "einkauf-lib": "git+https://StHoffmann@bitbucket.org/StHoffmann/einkauf-lib.git",
+    "stefans-rezepte" : "git+https://StHoffmann@bitbucket.org/StHoffmann/stefans-rezepte.git",
     "ejs": "^2.4.2",
     "express": "^4.14.0",
     "fs": "0.0.2",

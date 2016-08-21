@@ -4,7 +4,7 @@
  * 
  */
 
-var rezepte = require("../../node_modules/einkauf-lib/rezepte.js");
+var rezepte = require("../../node_modules/stefans-rezepte/rezepte.js");
 var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
 var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
 var Inventur = require("./inventur.js").Inventur;
