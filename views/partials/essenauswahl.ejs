@@ -1,4 +1,4 @@
-<select class="selectpicker essensauswahl" data-live-search="true" name="<%= tag %>_<%= art %>">
+<select class="selectpicker essensauswahl" data-live-search="true" id="<%= tag %>_<%= art %>" name="<%= tag %>_<%= art %>">
     <option value="kein Essen gewählt"> - Kein Essen - </option>
     <% for (var i = 0; i < rezepte.length; i++ ) { %>
         <option value="<%= rezepte[i].rezeptNummer %>"><%= rezepte[i].name %> (<%= rezepte[i].rezeptNummer %>)</option>
