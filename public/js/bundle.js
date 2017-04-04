@@ -414,6 +414,292 @@ module.exports.Umrechnungen = Umrechnungen;
 },{}],3:[function(require,module,exports){
 /**
  * 
+ * Der Einstiegspunkt für die Anwendung :)
+ * 
+ */
+
+var rezepte = require("../../stefans-rezepte/rezepte.js");
+var Einkaufsliste = require("../../einkauf-lib/einkaufsliste.js");
+var Rewe = require("../../einkauf-lib/lieferanten/rewe");
+var Inventur = require("./inventur.js").Inventur;
+var toCountByItem = require("./tools.js").toCountByItem;
+
+
+/* Abstraktion der UI als Datenschicht */
+var uiData = (function() {
+    "use strict";
+
+    var publicApi;
+
+    function Essensauswahlen() {
+        var ergebnis = [];
+        
+        $("select.essensauswahl").each(
+            function(index, value) {
+                ergebnis.push($(value).val());
+            }
+        );
+
+        return ergebnis;
+    }
+
+    publicApi = {
+        Essensauswahlen : Essensauswahlen
+    };
+
+    return publicApi;
+})();
+
+/* BL */
+var client = (function () {
+    "use strict";
+
+    var publicApi;
+
+    /**
+     * Wenn das Inventurcontrol eine Aktualisierung meldet, dann aktualisieren wir
+     * die Anzeige.
+     * */
+    function AktualisiereErgebnis() {
+        var einkaufsliste = publicApi.Inventur.ErgebnisEinkaufsliste();
+        console.log(einkaufsliste);
+        /* ... und ab hier müsste jetzt das Inventurergebnis weiterverwendet werden. */
+        var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
+        $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
+        $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
+    }
+
+    /**
+     * Wir tragen die Einzelauswahlen zusammen und stellen daraus 
+     * eine schöne Liste auf mit Anzahl und Gericht, die wir 
+     * dann weiterverarbeiten können.
+     */
+    function ZusammenfassungErstellen() {
+        var eintraege = uiData.Essensauswahlen();
+        var ausgezaehlt = toCountByItem(eintraege);
+        
+        var ausgabe = ""; 
+        var keys = Object.keys(ausgezaehlt);
+        var einkaufsliste = new Einkaufsliste();
+
+        for ( var i = 0; i < keys.length; i++ ) {
+            var rezept = rezepte.Rezept(keys[i]);
+            if (rezept !== undefined) {
+                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + rezept.name + "</li>";
+                for ( var j = 0; j < ausgezaehlt[keys[i]]; j++ ) {
+                    einkaufsliste.FuegeRezeptHinzu(keys[i], rezepte.Rezepte);
+                }
+            }
+            else
+            {
+                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + keys[i] + "</li>";
+            }
+        }
+
+        $("#zusammenfassung").html(ausgabe); 
+
+        /* Wir informieren das Inventur-Control, dass es sich ggf. anpassen muss. */
+        publicApi.Inventur.AktualisiereDaten(einkaufsliste.Daten);
+
+
+    }
+
+    function Init() {
+        /* Wenn eine Auswahl geändert wird, dann wollen wir gerne davon wissen */
+        $("select.essensauswahl").on("change", ZusammenfassungErstellen );
+        publicApi.Inventur = Inventur("#zutaten");
+        publicApi.Inventur.Aenderungscallback = AktualisiereErgebnis;
+        ZusammenfassungErstellen();
+    }
+
+    publicApi = {
+        init : Init
+    };
+
+    return publicApi; 
+})();
+
+
+
+$(document).ready(function() {
+    client.init();
+});
+},{"../../einkauf-lib/einkaufsliste.js":1,"../../einkauf-lib/lieferanten/rewe":2,"../../stefans-rezepte/rezepte.js":6,"./inventur.js":4,"./tools.js":5}],4:[function(require,module,exports){
+/**
+ * 
+ * Eine Inventur nimmt eine Einkaufsliste entgegen und zeigt
+ * diese inhaltlich an. Des Weiteren stellt sie ein Eingabefeld
+ * bereit, in dem die bereits vorhandene Menge eingeben werden kann, 
+ * welche dann vom Bedarf abgezogen wird.
+ * 
+ * Das Ergebnis dieser Benutzerinteraktion kann wiederum als Einkaufsliste
+ * abgerufen werden.
+ * 
+ * In der Essensplanung wird bei jeder Änderung des Ausgangsplanes 
+ * eine Aktualisierung des Bedarfs ausgeführt, was bedeutet, dass 
+ * dass neue Zeilen eingefügt oder bestehende aktualisert werden müssen ohne
+ * dass die Eingabe des Benutzers verloren geht.
+ * 
+ */
+var Einkaufsliste = require("../../einkauf-lib/einkaufsliste.js");
+
+
+var Inventur = function inventur(selektor) {
+    "use strict";
+
+    var publicApi;
+
+    function AktualisiereRestmenge(eventTarget) {
+        var wert = $(eventTarget).val();
+        var i = $(eventTarget).data("position");
+
+        if ( !isNaN(wert) ) {
+            $(eventTarget).removeClass("has-error");
+            wert = parseFloat(wert);
+            publicApi.Daten[i].lagerbestand = wert;
+            var restbedarf = (publicApi.Daten[i].anzahl - publicApi.Daten[i].lagerbestand).toFixed(2);
+            $(selektor).find("#restbedarf-" + i).html(restbedarf);
+
+            if (publicApi.Aenderungscallback !== undefined)
+            {
+                publicApi.Aenderungscallback();
+            }
+        }
+        else
+        {
+            $(eventTarget).addClass("has-error");
+            $(selektor).find("#restbedarf-" + i).html("Zahl wird benötigt");
+        }
+    }
+
+    function AktualisiereAnzeige() {
+        $(selektor).off("change");
+
+        $(selektor).html(AlsHtml());
+
+        $(selektor).on("change", "input", function(event) {
+            AktualisiereRestmenge(event.target);
+        });
+    }
+
+    function AktualisiereDaten(neueDaten) {
+        publicApi.Daten = JSON.parse(JSON.stringify(neueDaten));
+
+        for ( var i = 0; i < publicApi.Daten.length; i++ ) {
+            if ( publicApi.Daten[i].lagerbestand === undefined ) {
+                publicApi.Daten[i].lagerbestand = 0;
+            }
+        }
+
+        AktualisiereAnzeige();
+
+        if (publicApi.Aenderungscallback !== undefined)
+        {
+            publicApi.Aenderungscallback();
+        }
+    }
+        
+    /* Zweck einer Lagerbedarfstabelle ist die Auflistung der Inhalte mit der 
+       Möglichkeit einen vorhandenen Lagerbestand anzugeben.
+       Die Mengendifferenz kann dann wiederum weiterverarbeitet werden, so dass
+       sich die Einkaufsliste ausschließlich auf Dinge bezieht, 
+       die Du einkaufen musst. 
+       Das bedeutet u.a. das Du einen Ereigniskonnektor für Änderungen in der 
+       bereitgestellten UI benötigst.
+    */
+    function AlsHtml() {
+        var ergebnis = "<table class=\"table table-condensed\">"; 
+        ergebnis += "<tr><th style=\"text-align:right\">Anzahl nötig</th><th>Einheit</th><th>Artikel</th><th>Lagerbestand</th><th>Restbedarf</th></tr>";
+
+        var anzahl = publicApi.Daten.length;
+
+        for (var i = 0; i < anzahl; i++) {
+
+            var bedarf          = publicApi.Daten[i].anzahl.toFixed(2);
+            var lagerbestand    = publicApi.Daten[i].lagerbestand.toFixed(2);
+            var restbedarf      = (parseFloat(bedarf) - parseFloat(lagerbestand)).toFixed(2);
+            var einheit         = publicApi.Daten[i].einheit;
+            var artikel         = publicApi.Daten[i].artikel;
+
+            var template = 
+                        "<tr>" + 
+                            "<td style=\"text-align:right\">$bedarf$</td>" + 
+                            "<td>$einheit$</td>" + 
+                            "<td>$artikel$</td>" + 
+                            "<td><input type=\"text\" class=\"form-control\" data-position=\"$i$\" value=\"0\"></input></td>" + 
+                            "<td style=\"text-align:right\" id=\"restbedarf-$i$\">$restbedarf$</td>" + 
+                        "</tr>";
+
+            template = template.replace(/\$bedarf\$/g, bedarf);
+            template = template.replace(/\$lagerbestand\$/g, lagerbestand);
+            template = template.replace(/\$restbedarf\$/g, restbedarf);
+            template = template.replace(/\$einheit\$/g, einheit);
+            template = template.replace(/\$artikel\$/g, artikel);
+            template = template.replace(/\$i\$/g, i);
+
+            ergebnis += template;
+        }        
+
+        ergebnis += "</table>";
+
+        return ergebnis;
+    }
+
+    /* Ruft die durch die Inventur ggf. manuell modifizierte Ergebnisliste ab. */
+    function ErgebnisEinkaufsliste() {
+        var einkaufsliste = new Einkaufsliste();
+
+        for ( var i = 0; i < publicApi.Daten.length; i++ ) {
+            var restbedarf = Math.round((publicApi.Daten[i].anzahl - publicApi.Daten[i].lagerbestand)*100)/100;
+            
+            if ( restbedarf > 0 ) {
+                einkaufsliste.FuegeZutatHinzu({
+                    artikel : publicApi.Daten[i].artikel,
+                    einheit : publicApi.Daten[i].einheit,
+                    anzahl  : restbedarf
+                });
+            }
+        }
+
+        return einkaufsliste;
+    }
+
+    publicApi = {
+        AktualisiereDaten : AktualisiereDaten,
+        AlsHtml : AlsHtml,
+        ErgebnisEinkaufsliste : ErgebnisEinkaufsliste,
+        Aenderungscallback : undefined
+    };
+
+    return publicApi;
+}
+
+module.exports = {
+    Inventur : Inventur
+}
+},{"../../einkauf-lib/einkaufsliste.js":1}],5:[function(require,module,exports){
+function toCountByItem(items)
+{
+    var ergebnis = {};
+
+    for ( var i = 0; i < items.length; i++ ) {
+        if ( ergebnis[items[i]] === undefined ) {
+            ergebnis[items[i]] = 1;
+        }
+        else {
+            ergebnis[items[i]] += 1;
+        }
+    }
+
+    return ergebnis;
+}
+
+module.exports = {
+    toCountByItem : toCountByItem
+};
+},{}],6:[function(require,module,exports){
+/**
+ * 
  * Diese Datei beinhaltet die Rezepte, die die Anwendung kennt. 
  * 
  * 
@@ -676,290 +962,4 @@ publicApi = {
 module.exports = publicApi;
 
 
-},{}],4:[function(require,module,exports){
-/**
- * 
- * Der Einstiegspunkt für die Anwendung :)
- * 
- */
-
-var rezepte = require("../../node_modules/stefans-rezepte/rezepte.js");
-var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
-var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
-var Inventur = require("./inventur.js").Inventur;
-var toCountByItem = require("./tools.js").toCountByItem;
-
-
-/* Abstraktion der UI als Datenschicht */
-var uiData = (function() {
-    "use strict";
-
-    var publicApi;
-
-    function Essensauswahlen() {
-        var ergebnis = [];
-        
-        $("select.essensauswahl").each(
-            function(index, value) {
-                ergebnis.push($(value).val());
-            }
-        );
-
-        return ergebnis;
-    }
-
-    publicApi = {
-        Essensauswahlen : Essensauswahlen
-    };
-
-    return publicApi;
-})();
-
-/* BL */
-var client = (function () {
-    "use strict";
-
-    var publicApi;
-
-    /**
-     * Wenn das Inventurcontrol eine Aktualisierung meldet, dann aktualisieren wir
-     * die Anzeige.
-     * */
-    function AktualisiereErgebnis() {
-        var einkaufsliste = publicApi.Inventur.ErgebnisEinkaufsliste();
-        console.log(einkaufsliste);
-        /* ... und ab hier müsste jetzt das Inventurergebnis weiterverwendet werden. */
-        var beiEinkaufUeberRewe = einkaufsliste.VerrechneUeberUmrechnungsmatrix(Rewe.Umrechnungen);
-        $("#rewe").html(beiEinkaufUeberRewe.AlsHtmlTabelle());
-        $("#optimalpreis").html(beiEinkaufUeberRewe.AlsEinzelpreisHtmlTabelle());
-    }
-
-    /**
-     * Wir tragen die Einzelauswahlen zusammen und stellen daraus 
-     * eine schöne Liste auf mit Anzahl und Gericht, die wir 
-     * dann weiterverarbeiten können.
-     */
-    function ZusammenfassungErstellen() {
-        var eintraege = uiData.Essensauswahlen();
-        var ausgezaehlt = toCountByItem(eintraege);
-        
-        var ausgabe = ""; 
-        var keys = Object.keys(ausgezaehlt);
-        var einkaufsliste = new Einkaufsliste();
-
-        for ( var i = 0; i < keys.length; i++ ) {
-            var rezept = rezepte.Rezept(keys[i]);
-            if (rezept !== undefined) {
-                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + rezept.name + "</li>";
-                for ( var j = 0; j < ausgezaehlt[keys[i]]; j++ ) {
-                    einkaufsliste.FuegeRezeptHinzu(keys[i], rezepte.Rezepte);
-                }
-            }
-            else
-            {
-                ausgabe += "<li>" +  ausgezaehlt[keys[i]] + "x " + keys[i] + "</li>";
-            }
-        }
-
-        $("#zusammenfassung").html(ausgabe); 
-
-        /* Wir informieren das Inventur-Control, dass es sich ggf. anpassen muss. */
-        publicApi.Inventur.AktualisiereDaten(einkaufsliste.Daten);
-
-
-    }
-
-    function Init() {
-        /* Wenn eine Auswahl geändert wird, dann wollen wir gerne davon wissen */
-        $("select.essensauswahl").on("change", ZusammenfassungErstellen );
-        publicApi.Inventur = Inventur("#zutaten");
-        publicApi.Inventur.Aenderungscallback = AktualisiereErgebnis;
-        ZusammenfassungErstellen();
-    }
-
-    publicApi = {
-        init : Init
-    };
-
-    return publicApi; 
-})();
-
-
-
-$(document).ready(function() {
-    client.init();
-});
-},{"../../node_modules/einkauf-lib/einkaufsliste.js":1,"../../node_modules/einkauf-lib/lieferanten/rewe":2,"../../node_modules/stefans-rezepte/rezepte.js":3,"./inventur.js":5,"./tools.js":6}],5:[function(require,module,exports){
-/**
- * 
- * Eine Inventur nimmt eine Einkaufsliste entgegen und zeigt
- * diese inhaltlich an. Des Weiteren stellt sie ein Eingabefeld
- * bereit, in dem die bereits vorhandene Menge eingeben werden kann, 
- * welche dann vom Bedarf abgezogen wird.
- * 
- * Das Ergebnis dieser Benutzerinteraktion kann wiederum als Einkaufsliste
- * abgerufen werden.
- * 
- * In der Essensplanung wird bei jeder Änderung des Ausgangsplanes 
- * eine Aktualisierung des Bedarfs ausgeführt, was bedeutet, dass 
- * dass neue Zeilen eingefügt oder bestehende aktualisert werden müssen ohne
- * dass die Eingabe des Benutzers verloren geht.
- * 
- */
-var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
-
-
-var Inventur = function inventur(selektor) {
-    "use strict";
-
-    var publicApi;
-
-    function AktualisiereRestmenge(eventTarget) {
-        var wert = $(eventTarget).val();
-        var i = $(eventTarget).data("position");
-
-        if ( !isNaN(wert) ) {
-            $(eventTarget).removeClass("has-error");
-            wert = parseFloat(wert);
-            publicApi.Daten[i].lagerbestand = wert;
-            var restbedarf = (publicApi.Daten[i].anzahl - publicApi.Daten[i].lagerbestand).toFixed(2);
-            $(selektor).find("#restbedarf-" + i).html(restbedarf);
-
-            if (publicApi.Aenderungscallback !== undefined)
-            {
-                publicApi.Aenderungscallback();
-            }
-        }
-        else
-        {
-            $(eventTarget).addClass("has-error");
-            $(selektor).find("#restbedarf-" + i).html("Zahl wird benötigt");
-        }
-    }
-
-    function AktualisiereAnzeige() {
-        $(selektor).off("change");
-
-        $(selektor).html(AlsHtml());
-
-        $(selektor).on("change", "input", function(event) {
-            AktualisiereRestmenge(event.target);
-        });
-    }
-
-    function AktualisiereDaten(neueDaten) {
-        publicApi.Daten = JSON.parse(JSON.stringify(neueDaten));
-
-        for ( var i = 0; i < publicApi.Daten.length; i++ ) {
-            if ( publicApi.Daten[i].lagerbestand === undefined ) {
-                publicApi.Daten[i].lagerbestand = 0;
-            }
-        }
-
-        AktualisiereAnzeige();
-
-        if (publicApi.Aenderungscallback !== undefined)
-        {
-            publicApi.Aenderungscallback();
-        }
-    }
-        
-    /* Zweck einer Lagerbedarfstabelle ist die Auflistung der Inhalte mit der 
-       Möglichkeit einen vorhandenen Lagerbestand anzugeben.
-       Die Mengendifferenz kann dann wiederum weiterverarbeitet werden, so dass
-       sich die Einkaufsliste ausschließlich auf Dinge bezieht, 
-       die Du einkaufen musst. 
-       Das bedeutet u.a. das Du einen Ereigniskonnektor für Änderungen in der 
-       bereitgestellten UI benötigst.
-    */
-    function AlsHtml() {
-        var ergebnis = "<table class=\"table table-condensed\">"; 
-        ergebnis += "<tr><th style=\"text-align:right\">Anzahl nötig</th><th>Einheit</th><th>Artikel</th><th>Lagerbestand</th><th>Restbedarf</th></tr>";
-
-        var anzahl = publicApi.Daten.length;
-
-        for (var i = 0; i < anzahl; i++) {
-
-            var bedarf          = publicApi.Daten[i].anzahl.toFixed(2);
-            var lagerbestand    = publicApi.Daten[i].lagerbestand.toFixed(2);
-            var restbedarf      = (parseFloat(bedarf) - parseFloat(lagerbestand)).toFixed(2);
-            var einheit         = publicApi.Daten[i].einheit;
-            var artikel         = publicApi.Daten[i].artikel;
-
-            var template = 
-                        "<tr>" + 
-                            "<td style=\"text-align:right\">$bedarf$</td>" + 
-                            "<td>$einheit$</td>" + 
-                            "<td>$artikel$</td>" + 
-                            "<td><input type=\"text\" class=\"form-control\" data-position=\"$i$\" value=\"0\"></input></td>" + 
-                            "<td style=\"text-align:right\" id=\"restbedarf-$i$\">$restbedarf$</td>" + 
-                        "</tr>";
-
-            template = template.replace(/\$bedarf\$/g, bedarf);
-            template = template.replace(/\$lagerbestand\$/g, lagerbestand);
-            template = template.replace(/\$restbedarf\$/g, restbedarf);
-            template = template.replace(/\$einheit\$/g, einheit);
-            template = template.replace(/\$artikel\$/g, artikel);
-            template = template.replace(/\$i\$/g, i);
-
-            ergebnis += template;
-        }        
-
-        ergebnis += "</table>";
-
-        return ergebnis;
-    }
-
-    /* Ruft die durch die Inventur ggf. manuell modifizierte Ergebnisliste ab. */
-    function ErgebnisEinkaufsliste() {
-        var einkaufsliste = new Einkaufsliste();
-
-        for ( var i = 0; i < publicApi.Daten.length; i++ ) {
-            var restbedarf = Math.round((publicApi.Daten[i].anzahl - publicApi.Daten[i].lagerbestand)*100)/100;
-            
-            if ( restbedarf > 0 ) {
-                einkaufsliste.FuegeZutatHinzu({
-                    artikel : publicApi.Daten[i].artikel,
-                    einheit : publicApi.Daten[i].einheit,
-                    anzahl  : restbedarf
-                });
-            }
-        }
-
-        return einkaufsliste;
-    }
-
-    publicApi = {
-        AktualisiereDaten : AktualisiereDaten,
-        AlsHtml : AlsHtml,
-        ErgebnisEinkaufsliste : ErgebnisEinkaufsliste,
-        Aenderungscallback : undefined
-    };
-
-    return publicApi;
-}
-
-module.exports = {
-    Inventur : Inventur
-}
-},{"../../node_modules/einkauf-lib/einkaufsliste.js":1}],6:[function(require,module,exports){
-function toCountByItem(items)
-{
-    var ergebnis = {};
-
-    for ( var i = 0; i < items.length; i++ ) {
-        if ( ergebnis[items[i]] === undefined ) {
-            ergebnis[items[i]] = 1;
-        }
-        else {
-            ergebnis[items[i]] += 1;
-        }
-    }
-
-    return ergebnis;
-}
-
-module.exports = {
-    toCountByItem : toCountByItem
-};
-},{}]},{},[4]);
+},{}]},{},[3]);

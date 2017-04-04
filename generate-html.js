@@ -4,7 +4,7 @@
  * 
  */
 
-var rezepte = require("stefans-rezepte/rezepte");
+var rezepte = require("./stefans-rezepte/rezepte");
 var ejs = require("ejs");
 var fs = require("fs");
 
