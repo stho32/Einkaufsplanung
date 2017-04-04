@@ -4,9 +4,9 @@
  * 
  */
 
-var rezepte = require("../../node_modules/stefans-rezepte/rezepte.js");
-var Einkaufsliste = require("../../node_modules/einkauf-lib/einkaufsliste.js");
-var Rewe = require("../../node_modules/einkauf-lib/lieferanten/rewe");
+var rezepte = require("../../stefans-rezepte/rezepte.js");
+var Einkaufsliste = require("../../einkauf-lib/einkaufsliste.js");
+var Rewe = require("../../einkauf-lib/lieferanten/rewe");
 var Inventur = require("./inventur.js").Inventur;
 var toCountByItem = require("./tools.js").toCountByItem;
 
