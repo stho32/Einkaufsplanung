@@ -418,11 +418,11 @@ module.exports.Umrechnungen = Umrechnungen;
  * 
  */
 
-var rezepte = require("../../stefans-rezepte/rezepte.js");
+var rezepte = require(".././rezepte.js");
 var Einkaufsliste = require("../../einkauf-lib/einkaufsliste.js");
-var Rewe = require("../../einkauf-lib/lieferanten/rewe");
-var Inventur = require("./inventur.js").Inventur;
-var toCountByItem = require("./tools.js").toCountByItem;
+var Rewe = require(".././rewe");
+var Inventur = require("./../../einkaufsbibliothek/inventur.js").Inventur;
+var toCountByItem = require("./../../einkaufsbibliothek/tools.js").toCountByItem;
 
 
 /* Abstraktion der UI als Datenschicht */

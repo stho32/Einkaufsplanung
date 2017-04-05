@@ -14,7 +14,7 @@
  * dass die Eingabe des Benutzers verloren geht.
  * 
  */
-var Einkaufsliste = require("../../einkauf-lib/einkaufsliste.js");
+var Einkaufsliste = require("../einkauf-lib/einkaufsliste.js");
 
 
 var Inventur = function inventur(selektor) {
