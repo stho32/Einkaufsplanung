@@ -5,7 +5,7 @@
  */
 
 var rezepte = require(".././rezepte.js");
-var Einkaufsliste = require("../../einkauf-lib/einkaufsliste.js");
+var Einkaufsliste = require("../../einkaufsbibliothek/einkaufsliste.js");
 var Rewe = require(".././rewe");
 var Inventur = require("./../../einkaufsbibliothek/inventur.js").Inventur;
 var toCountByItem = require("./../../einkaufsbibliothek/tools.js").toCountByItem;
