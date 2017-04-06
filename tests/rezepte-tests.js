@@ -1,3 +1,5 @@
+QUnit.module("Rezepte");
+
 QUnit.test( "Der Zugriff auf die Rezeptdaten über das Array funktioniert.", function( assert ) {
 
     var rezepte = Rezepte();
@@ -29,4 +31,6 @@ QUnit.test( "Prüfung, ob ein Rezept verfügbar ist", function( assert ) {
     assert.equal(undefined, unbekanntesRezept, "Wenn ein Rezept unbekannt ist, dann wird undefined zurückgegeben.")
 
 });
+
+
 

@@ -7,10 +7,33 @@
     <link rel="stylesheet" href="../node_modules/qunitjs/qunit/qunit.css">
 </head>
 <body>
-<div id="qunit"></div>
-<div id="qunit-fixture"></div>
-<script src="../node_modules/qunitjs/qunit/qunit.js"></script>
-<script src="../einkaufsbibliothek/rezepte.js"></script>
-<script src="rezepte-tests.js"></script>
+
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+
+    <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
+
+    <!-- Wir brauchen Rezepte -->
+    <script src="../einkaufsbibliothek/rezepte.js"></script>
+    <script src="rezepte-tests.js"></script>
+
+    <!-- Und naja, einen Warenlieferanten -->
+    <script src="../einkaufsbibliothek/lieferanten/rewe.js"></script>
+    <script src="lieferanten/reweTests.js"></script>
+
+    <!-- Wir stellen die Rezepte zu einer Einkaufsliste zusammen -->
+    <script src="../einkaufsbibliothek/einkaufsliste.js"></script>
+
+    <!-- ... die wir auf verschiedene Weisen ausgeben können .. -->
+    <script src="../einkaufsbibliothek/renderer/EinkaufslisteRenderer.js"></script>
+    <script src="../einkaufsbibliothek/renderer/EinkaufslisteAlsHtmlTabelleRenderer.js"></script>
+    <script src="../einkaufsbibliothek/renderer/EinkaufslisteAlsEinzelpreisHtmlTabelleRenderer.js"></script>
+
+    <script src="renderer/EinkaufslisteRendererTests.js"></script>
+
+    <!-- ... und dann vergleichen wir mit dem Kram, den wir haben -->
+    <!-- führen also einen Vergleich von dem durch, was wir haben und dem Kram was wir brauchen -->
+
+    <!-- Die Differenz dazwischen ist das, was wir einkaufen müssen. -->
 </body>
 </html>

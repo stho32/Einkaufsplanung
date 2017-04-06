@@ -9,8 +9,8 @@ var Einkaufsliste = function() {
      */
     function FuegeZutatHinzu(zutat) {
         for (var i = 0; i < publicApi.Daten.length; i++) {
-            if (publicApi.Daten[i].artikel == zutat.artikel &&
-                publicApi.Daten[i].einheit == zutat.einheit) {
+            if (publicApi.Daten[i].artikel === zutat.artikel &&
+                publicApi.Daten[i].einheit === zutat.einheit) {
                 publicApi.Daten[i].anzahl  += zutat.anzahl;
                 return;
             }
@@ -29,7 +29,8 @@ var Einkaufsliste = function() {
     function FuegeRezeptHinzu(rezeptnameOderNummer, rezeptliste) {
         // 1. Rezept finden
         for (var i = 0; i < rezeptliste.length; i++) {
-            if (rezeptliste[i].rezeptNummer == rezeptnameOderNummer || rezeptliste[i].name == rezeptnameOderNummer) {
+            if (rezeptliste[i].rezeptNummer === rezeptnameOderNummer ||
+                rezeptliste[i].name === rezeptnameOderNummer) {
 
                 // Zutaten mergen mit Einkaufsliste
                 for (var j = 0; j < rezeptliste[i].zutaten.length; j++) {
@@ -51,8 +52,8 @@ var Einkaufsliste = function() {
 
         function FindeUmrechnungskursFuer(einheit, artikel) {
             for (var i = 0; i < umrechnungsmatrix.length; i++) {
-                if (umrechnungsmatrix[i].einheit == einheit &&
-                    umrechnungsmatrix[i].artikel == artikel) {
+                if (umrechnungsmatrix[i].einheit === einheit &&
+                    umrechnungsmatrix[i].artikel === artikel) {
                     return umrechnungsmatrix[i];
                 }
             }
@@ -63,7 +64,7 @@ var Einkaufsliste = function() {
         for (var i = 0; i < publicApi.Daten.length; i++) {
             var umrechnungskurs = FindeUmrechnungskursFuer(publicApi.Daten[i].einheit, publicApi.Daten[i].artikel);
 
-            if (umrechnungskurs != null) {
+            if (umrechnungskurs !== null) {
 
                 var neu = umrechnungskurs.umrechnung(publicApi.Daten[i].anzahl);
                 publicApi.Daten[i].anzahl = neu.anzahl;
@@ -183,7 +184,7 @@ var Einkaufsliste = function() {
         return ergebnis;
     }
 
-    var publicApi = {
+    publicApi = {
         Daten : [],
         FuegeZutatHinzu : FuegeZutatHinzu,
         FuegeRezeptHinzu : FuegeRezeptHinzu,
@@ -193,9 +194,7 @@ var Einkaufsliste = function() {
         AlsHtmlLi : AlsHtmlLi,
         AlsHtmlTabelle : AlsHtmlTabelle,
         AlsEinzelpreisHtmlTabelle : AlsEinzelpreisHtmlTabelle
-    }
+    };
 
     return publicApi;
 };
-
-module.exports = Einkaufsliste;
