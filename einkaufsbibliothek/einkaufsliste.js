@@ -92,13 +92,6 @@ var Einkaufsliste = function() {
         return ergebnisEk;
     }
 
-
-    function Ausgabe() {
-        for (var i = 0; i < publicApi.Daten.length; i++) {
-            console.log(publicApi.Daten[i].anzahl.toFixed(2) + " " + publicApi.Daten[i].einheit + " " + publicApi.Daten[i].artikel);
-        }
-    }
-
     function AlsHtmlLi() {
         var ergebnis = ""; 
         var anzahl = publicApi.Daten.length;
@@ -148,7 +141,6 @@ var Einkaufsliste = function() {
         FuegeZutatHinzu : FuegeZutatHinzu,
         FuegeRezeptHinzu : FuegeRezeptHinzu,
         VerrechneUeberUmrechnungsmatrix : VerrechneUeberUmrechnungsmatrix,
-        Ausgabe : Ausgabe,
         AlsHtmlLi : AlsHtmlLi,
         AlsEinzelpreisHtmlTabelle : AlsEinzelpreisHtmlTabelle
     };
