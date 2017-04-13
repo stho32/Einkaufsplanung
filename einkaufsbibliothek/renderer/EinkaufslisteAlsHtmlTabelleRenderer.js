@@ -33,11 +33,13 @@ var EinkaufslisteAlsHtmlTabelleRenderer = function(einkaufsliste) {
             var preis = 0;
             if ( einkaufsliste.Daten[i].preis !== undefined)
                 preis = einkaufsliste.Daten[i].preis;
+            var anzahlGerundet = Math.ceil(einkaufsliste.Daten[i].anzahl);
+
 
             ergebnis += "<tr><td style=\"text-align:right\">" + einkaufsliste.Daten[i].anzahl.toFixed(2) +
                 "</td><td>" + einkaufsliste.Daten[i].einheit + "</td><td>" + einkaufsliste.Daten[i].artikel +
                 "</td>" +
-                "<td style=\"text-align:right\">" + einkaufsliste.Daten[i].anzahlGerundet + "</td>" +
+                "<td style=\"text-align:right\">" + anzahlGerundet + "</td>" +
                 "<td> x </td>" +
                 "<td style=\"text-align:right\">" + einzelpreis.toFixed(2) + " € </td>" +
                 "<td> = </td>" +
