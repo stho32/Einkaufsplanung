@@ -92,16 +92,6 @@ var Einkaufsliste = function() {
         return ergebnisEk;
     }
 
-    /**
-     * Wenn eine Einkaufsliste das Ergebnis von Berechnungen ist, dann sind die Mengenangaben meistens etwas 
-     * daneben. Wie "Kaufe 2.8 Gurken...". 
-     * Diese Routine rundet die Mengen auf, damit Du weisst, was du kaufen musst.
-     */
-    function Runde() {
-        for (var i = 0; i < publicApi.Daten.length; i++) {
-            publicApi.Daten[i].anzahl = Math.ceil(publicApi.Daten[i].anzahl);
-        }
-    }
 
     function Ausgabe() {
         for (var i = 0; i < publicApi.Daten.length; i++) {
@@ -158,7 +148,6 @@ var Einkaufsliste = function() {
         FuegeZutatHinzu : FuegeZutatHinzu,
         FuegeRezeptHinzu : FuegeRezeptHinzu,
         VerrechneUeberUmrechnungsmatrix : VerrechneUeberUmrechnungsmatrix,
-        Runde : Runde, 
         Ausgabe : Ausgabe,
         AlsHtmlLi : AlsHtmlLi,
         AlsEinzelpreisHtmlTabelle : AlsEinzelpreisHtmlTabelle
