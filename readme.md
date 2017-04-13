@@ -7,14 +7,11 @@ und die Optimierung des Lagerbestandes in der Küche.
 
 Die Einkaufsplanung läuft in folgenden Phasen ab:
 
-1) Auswahl der Rezepte
-2) Feststellung des aktuellen Lagerbestandes in der Küche
-3) Bestimmung der zu kaufenden Artikel und Artikelmengen \
-   mit Bezug auf einen bestimmten Essenslieferanten (z.B. \
-   werden Brotscheiben zu ja! Brot, 9 Scheiben-Packungen umgerechnet). \
-   Dabei findet auch eine Vorbestimmung der Preise statt, \
-   denn für diese tatsächlichen Produkte geben einem \
-   die Einkaufshallen ja tatsächliche Preise.
+1. Auswahl der Rezepte
+
+2. Feststellung des aktuellen Lagerbestandes in der Küche
+
+3. Bestimmung der zu kaufenden Artikel und Artikelmengen mit Bezug auf einen bestimmten Essenslieferanten (z.B. werden Brotscheiben zu ja! Brot, 9 Scheiben-Packungen umgerechnet). Dabei findet auch eine Vorbestimmung der Preise statt, denn für diese tatsächlichen Produkte geben einem die Einkaufshallen ja tatsächliche Preise.
    
 (Optional kann anhand der Preise und der Artikelmengen auch
 der Preis pro Rezept bestimmt werden.)
@@ -28,5 +25,3 @@ Zukunftsmusik:
 - Vielleicht kann man es schaffen, den Einkauf vollständig zu automatisieren,
   in dem man den Einkaufszettel direkt in ein Onlineportal 
   fließen lässt.
-
-
