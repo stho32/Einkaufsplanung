@@ -10,7 +10,9 @@
 
     <div id="qunit"></div>
     <div id="qunit-fixture"></div>
+    <div id="testzwischenausgabe"></div>
 
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
     <script src="../node_modules/qunitjs/qunit/qunit.js"></script>
 
     <!-- Wir brauchen Rezepte -->
@@ -23,9 +25,9 @@
 
     <!-- Wir stellen die Rezepte zu einer Einkaufsliste zusammen -->
     <script src="../einkaufsbibliothek/einkaufsliste.js"></script>
+    <script src="einkaufsliste-tests.js"></script>
 
     <!-- ... die wir auf verschiedene Weisen ausgeben können .. -->
-    <script src="../einkaufsbibliothek/renderer/EinkaufslisteRenderer.js"></script>
     <script src="../einkaufsbibliothek/renderer/EinkaufslisteAlsHtmlTabelleRenderer.js"></script>
     <script src="../einkaufsbibliothek/renderer/EinkaufslisteAlsEinzelpreisHtmlTabelleRenderer.js"></script>
 

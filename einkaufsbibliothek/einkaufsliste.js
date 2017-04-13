@@ -116,41 +116,6 @@ var Einkaufsliste = function() {
         return ergebnis;
     }
 
-    function AlsHtmlTabelle() {
-        var ergebnis = "<table class=\"table table-condensed\">"; 
-        ergebnis += "<tr><th style=\"text-align:right\">Anzahl</th><th>Einheit</th><th>Artikel</th><th colspan=5 style=\"text-align:right;\">Preis</th></tr>";
-
-        var anzahl = publicApi.Daten.length;
-        var summe = 0;
-
-        for (var i = 0; i < anzahl; i++) {
-
-            var einzelpreis = 0;
-            if ( publicApi.Daten[i].einzelpreis !== undefined)
-                einzelpreis = publicApi.Daten[i].einzelpreis;
-            var preis = 0;
-            if ( publicApi.Daten[i].preis !== undefined)
-                preis = publicApi.Daten[i].preis;
-
-            ergebnis += "<tr><td style=\"text-align:right\">" + publicApi.Daten[i].anzahl.toFixed(2) +  
-                        "</td><td>" + publicApi.Daten[i].einheit + "</td><td>" + publicApi.Daten[i].artikel + 
-                        "</td>" + 
-                        "<td style=\"text-align:right\">" + publicApi.Daten[i].anzahlGerundet + "</td>" + 
-                        "<td> x </td>" + 
-                        "<td style=\"text-align:right\">" + einzelpreis.toFixed(2) + " € </td>" + 
-                        "<td> = </td>" + 
-                        "<td style=\"text-align:right\">" + preis.toFixed(2) + " € </td></tr>";
-                        
-            if (publicApi.Daten[i].preis !== undefined) {
-                summe += publicApi.Daten[i].preis;
-            }
-        }        
-
-        ergebnis += "<tr><th></th><th></th><th style=\"text-align:right\" colspan=5>Summe:</th><th style=\"text-align:right;\">" + summe.toFixed(2) + " € </th></tr>";
-        ergebnis += "</table>";
-
-        return ergebnis;
-    }
 
     function AlsEinzelpreisHtmlTabelle() {
         var ergebnis = "<table class=\"table table-condensed\">"; 
@@ -192,7 +157,6 @@ var Einkaufsliste = function() {
         Runde : Runde, 
         Ausgabe : Ausgabe,
         AlsHtmlLi : AlsHtmlLi,
-        AlsHtmlTabelle : AlsHtmlTabelle,
         AlsEinzelpreisHtmlTabelle : AlsEinzelpreisHtmlTabelle
     };
 
