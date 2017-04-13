@@ -92,23 +92,13 @@ var Einkaufsliste = function() {
         return ergebnisEk;
     }
 
-    function AlsHtmlLi() {
-        var ergebnis = ""; 
-        var anzahl = publicApi.Daten.length;
 
-        for (var i = 0; i < anzahl; i++) {
-            ergebnis += "<li>" + publicApi.Daten[i].anzahl.toFixed(2) + " " + publicApi.Daten[i].einheit + " " + publicApi.Daten[i].artikel + "</li>";
-        }        
-
-        return ergebnis;
-    }
 
     publicApi = {
         Daten : [],
         FuegeZutatHinzu : FuegeZutatHinzu,
         FuegeRezeptHinzu : FuegeRezeptHinzu,
-        VerrechneUeberUmrechnungsmatrix : VerrechneUeberUmrechnungsmatrix,
-        AlsHtmlLi : AlsHtmlLi
+        VerrechneUeberUmrechnungsmatrix : VerrechneUeberUmrechnungsmatrix
     };
 
     return publicApi;

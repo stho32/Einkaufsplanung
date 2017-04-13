@@ -39,3 +39,24 @@ QUnit.test("Rendern der Einkaufsliste als HTML-Tabelle (Einzelpreis)", function(
     assert.ok(html.indexOf("Magarine") > -1, "Magarine ist vorhanden");
     assert.ok(html.indexOf("undefined") === -1, "undefined darf nicht im Output sein");
 });
+
+QUnit.test("Rendern der Einkaufsliste als HTML-Tabelle (Einzelpreis)", function(assert) {
+
+    var einkaufsliste = Einkaufsliste();
+    var rezepte = Rezepte();
+    einkaufsliste.FuegeRezeptHinzu("Gurkenwurstbrot", rezepte);
+
+    var renderer = EinkaufslisteAlsHtmlListeRenderer(einkaufsliste);
+
+    var html = renderer.Render();
+
+    $("#testzwischenausgabe").append("<strong>EinkaufslisteAlsHtmlListeRenderer / Gurkenwurstbrot</strong><br/>")
+        .append(html);
+
+    assert.ok(html.indexOf("Gurke") > -1, "Gurke ist vorhanden");
+    assert.ok(html.indexOf("Wurst") > -1, "Wurst ist vorhanden");
+    assert.ok(html.indexOf("Brot")  > -1, "Brot ist vorhanden");
+    assert.ok(html.indexOf("Magarine") > -1, "Magarine ist vorhanden");
+    assert.ok(html.indexOf("undefined") === -1, "undefined darf nicht im Output sein");
+});
+
