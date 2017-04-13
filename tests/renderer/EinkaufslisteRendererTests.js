@@ -10,8 +10,8 @@ QUnit.test("Rendern der Einkaufsliste als HTML-Tabelle", function(assert) {
 
     var html = renderer.Render();
 
-    $("#testzwischenausgabe").append("<strong>EinkaufslisteAlsHtmlTabelleRenderer / Gurkenwurstbrot</strong><br/>");
-    $("#testzwischenausgabe").append(html);
+    $("#testzwischenausgabe").append("<strong>EinkaufslisteAlsHtmlTabelleRenderer / Gurkenwurstbrot</strong><br/>")
+                             .append(html);
 
 
 });
