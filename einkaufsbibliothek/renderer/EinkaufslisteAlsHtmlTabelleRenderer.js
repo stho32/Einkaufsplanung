@@ -5,7 +5,7 @@
  * Gesamtbedarf, sowie die tatsächliche Zahl von Artikeln
  * die eingekauft werden muss.
  *
- * @param einkaufsliste
+ * @param einkaufsliste Einkaufsliste
  * @constructor
  */
 

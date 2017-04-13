@@ -14,6 +14,8 @@
  * kennt und selbst einen macht, sehen, inwieweit, abzüglich
  * Zubereitungskosten, das Selbermachen Geld spart oder nicht.
  *
+ * @param einkaufsliste Einkaufsliste
+ * @constructor
  */
 
 var EinkaufslisteAlsEinzelpreisHtmlTabelleRenderer = function(einkaufsliste) {
