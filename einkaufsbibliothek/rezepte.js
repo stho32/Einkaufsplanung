@@ -244,6 +244,12 @@ function Rezepte() {
         return false;
     }
 
+    /**
+     * Sucht ein Rezept aus der Liste heraus und gibt dieses zurück.
+     * Wird das Rezept nicht gefunden, so wird undefined zurückgegeben.
+     *
+     * @return object|{undefined}
+     */
     function RezeptNachNameOderRezeptnummer(nameOderRezeptnummer) {
         for ( var i = 0; i < Rezepte.length; i++ ) {
             if ( Rezepte[i].name === nameOderRezeptnummer ||

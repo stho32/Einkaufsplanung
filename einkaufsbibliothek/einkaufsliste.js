@@ -25,20 +25,24 @@ var Einkaufsliste = function() {
 
     /**
      * Füge ein Rezept aus einer Rezeptliste in die Einkaufsliste ein.
+     *
+     * @param rezeptnameOderNummer string
+     * @param rezeptliste Rezepte
      */
     function FuegeRezeptHinzu(rezeptnameOderNummer, rezeptliste) {
-        // 1. Rezept finden
-        for (var i = 0; i < rezeptliste.length; i++) {
-            if (rezeptliste[i].rezeptNummer === rezeptnameOderNummer ||
-                rezeptliste[i].name === rezeptnameOderNummer) {
 
-                // Zutaten mergen mit Einkaufsliste
-                for (var j = 0; j < rezeptliste[i].zutaten.length; j++) {
-                    publicApi.FuegeZutatHinzu(rezeptliste[i].zutaten[j]);
-                }
+        var rezept = rezeptliste.Rezept(rezeptnameOderNummer);
 
-            }
-        }        
+        if ( rezept === undefined )
+        {
+            console.log("Das Rezept " + rezeptnameOderNummer + " ist unbekannt.");
+            return;
+        }
+
+        // Zutaten mergen mit Einkaufsliste
+        for (var i = 0; i < rezept.zutaten.length; i++) {
+            publicApi.FuegeZutatHinzu(rezept.zutaten[i]);
+        }
     }
 
     /**
