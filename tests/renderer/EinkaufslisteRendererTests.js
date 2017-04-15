@@ -40,7 +40,7 @@ QUnit.test("Rendern der Einkaufsliste als HTML-Tabelle (Einzelpreis)", function(
     assert.ok(html.indexOf("undefined") === -1, "undefined darf nicht im Output sein");
 });
 
-QUnit.test("Rendern der Einkaufsliste als HTML-Tabelle (Einzelpreis)", function(assert) {
+QUnit.test("Rendern der Einkaufsliste als Html-Liste", function(assert) {
 
     var einkaufsliste = Einkaufsliste();
     var rezepte = Rezepte();
