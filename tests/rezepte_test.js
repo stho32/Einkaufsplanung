@@ -1,7 +1,7 @@
 describe("Die Rezepte", function() {
 
     describe("koennen nach ihrem Namen abgerufen werden.", function() {
-        
+
         it("Sollte ein Rezept nicht zugreifbar sein, wird undefined zurückgegeben.", function() {
 
             var rezepte = Rezepte();
