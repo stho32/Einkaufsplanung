@@ -14,7 +14,6 @@
  * dass die Eingabe des Benutzers verloren geht.
  * 
  */
-var Einkaufsliste = require("einkaufsliste.js");
 
 
 var Inventur = function inventur(selektor) {
@@ -145,8 +144,4 @@ var Inventur = function inventur(selektor) {
     };
 
     return publicApi;
-}
-
-module.exports = {
-    Inventur : Inventur
-}
+};

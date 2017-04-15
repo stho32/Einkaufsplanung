@@ -14,6 +14,3 @@ function toCountByItem(items)
     return ergebnis;
 }
 
-module.exports = {
-    toCountByItem : toCountByItem
-};
