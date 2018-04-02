@@ -1,5 +1,8 @@
 # Stefans-Einkaufsplanung
 
+** Das Projekt ist gerade nicht lauffähig und muss aktualisiert werden **
+
+
 Ziel dieses Projektes ist es, eine effiziente Einkaufsplanung
 mit Bezug auf konkrete Gerichte zu erzeugen.
 Nebeneffekte sind eine Vergleichbarkeit von Essenslieferanten
